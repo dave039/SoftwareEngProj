@@ -1,9 +1,14 @@
+package state_manager;
+
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
 
 public class StateManager implements State {
-    
+	
     private State currentState;
+    
+
+    public StateManager(){
+    }
     
     public void setState(State state) {
         this.currentState = state;
@@ -21,15 +26,15 @@ public class StateManager implements State {
         this.currentState.render(g);
     }
 
-    public void keyPressed(KeyEvent key) {
+    public void keyPressed(int key) {
         this.currentState.keyPressed(key);
     }
 
-    public void keyReleased(KeyEvent key) {
-        this.currentState.keyPressed(key);
+    public void keyReleased(int key) {
+        this.currentState.keyReleased(key);
     }
 
-    public void keyTyped(KeyEvent key) {
-        this.currentState.keyPressed(key);
+    public void keyTyped(int key) {
+        this.currentState.keyTyped(key);
     }
 }

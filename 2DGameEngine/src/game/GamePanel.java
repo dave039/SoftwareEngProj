@@ -1,4 +1,6 @@
+package game;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -7,8 +9,14 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JPanel;
 
+import state_manager.MenuState;
+import state_manager.State;
+import state_manager.StateManager;
+
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 
+	private Font fpsFont;
+	
     static private StateManager runningState;
 
     static private boolean running = true;
@@ -19,18 +27,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         addKeyListener(this);
         runningState = new StateManager();
         runningState.setState(new MenuState());
+        
+        fpsFont = new Font("Arial", Font.ITALIC, 20);
     }
 
     public void keyTyped(KeyEvent key) {
-        runningState.keyPressed(key);
+        runningState.keyTyped(key.getKeyCode());
     }
 
     public void keyPressed(KeyEvent key) {
-        runningState.keyPressed(key);
+        runningState.keyPressed(key.getKeyCode());
     }
 
     public void keyReleased(KeyEvent key) {
-        runningState.keyPressed(key);
+        runningState.keyReleased(key.getKeyCode());
     }
 
     public void paint(Graphics g) {
@@ -38,12 +48,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         RenderingHints rh = new RenderingHints(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.setRenderingHints(rh);
-
+        //g2.setRenderingHints(rh);
+        
+        g2.setColor(Color.WHITE);
+        g2.fillRect(0, 0, GameWindow.WIDTH, GameWindow.HEIGHT);
+        
         runningState.render(g2);
 
-        g2.setColor(Color.black);
-        g2.drawString("FPS: " + fps, 10, 500 - 50);
+        g2.setColor(Color.BLACK);
+        
+        g2.setFont(fpsFont);
+        g2.drawString("FPS: " + fps, 10, 15);
     }
 
     public void run() {
