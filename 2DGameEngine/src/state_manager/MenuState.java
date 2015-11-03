@@ -15,11 +15,9 @@ import utilities.Keys;
 
 public class MenuState extends GameState {
 
-    private static Socket socket;
-    private static PrintWriter printWriter;
-
     public static final int START_OPTION = 0;
-    public static final int EXIT_OPTION = 1;
+    public static final int MULTIPLAYER_OPTION = 1;
+    public static final int EXIT_OPTION = 2;
 
     private boolean keyLock;
 
@@ -36,17 +34,8 @@ public class MenuState extends GameState {
         menuManager.setColor(new Color(255, 0, 255));
         menuManager.setFont(font);
         menuManager.addOption("START", 220, 300);
-        menuManager.addOption("EXIT", 220, 330);
-
-        try {
-            socket = new Socket("localhost", 63400);
-            printWriter = new PrintWriter(socket.getOutputStream(), true);
-            printWriter.println("Hello Socket");
-            printWriter.println("EYYYYYAAAAAAAA!!!!");
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
+        menuManager.addOption("MULTIPLAYER", 220, 330);
+        menuManager.addOption("EXIT", 220, 360);
     }
 
     public void update(boolean[] keys) {
@@ -54,6 +43,9 @@ public class MenuState extends GameState {
             switch (MenuManager.getCurrentOption()) {
                 case START_OPTION:
                     GamePanel.setState(new LevelOneState());
+                    break;
+                case MULTIPLAYER_OPTION:
+                    GamePanel.setState(new MultiplayerState());
                     break;
                 case EXIT_OPTION:
                     System.exit(0);

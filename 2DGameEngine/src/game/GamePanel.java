@@ -24,7 +24,6 @@ public class GamePanel extends JPanel implements Runnable {
     static private double fpsCap = 60;
     static private int fps;
     
-
     public GamePanel() {        
         inputManager = new InputManager();
         
