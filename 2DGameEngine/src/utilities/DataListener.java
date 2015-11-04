@@ -59,7 +59,14 @@ public class DataListener implements Runnable {
                 {
                     AllyObject temp = new AllyObject(250, 500, 50, 50);
                     temp.registerID(idNum);
-                    temp.setImage(FileLoader.loadImage("/resources/sanik.png"));
+                    if (idNum == 0)
+                    {
+                        temp.setImage(FileLoader.loadImage("/resources/dwarf.png"));
+                    }
+                    else
+                    {
+                        temp.setImage(FileLoader.loadImage("/resources/sanik.png"));
+                    }
                     MultiplayerState.allyList.add(temp);
                 }
             }

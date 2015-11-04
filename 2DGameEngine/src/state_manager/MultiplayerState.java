@@ -71,8 +71,8 @@ public class MultiplayerState extends GameState {
         objectList.add(player);
 
         try {
-            socket = new Socket("localhost", 63400);
-            //socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
+            //socket = new Socket("localhost", 63400);
+            socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
             //printWriter.println("Hello Socket");
             //printWriter.println("EYYYYYAAAAAAAA!!!!");
@@ -136,7 +136,7 @@ public class MultiplayerState extends GameState {
 //    		
 //    		bossActive = true;
 //    	}
-        if (score >= 15) {
+        /*if (score >= 15) {
             if (!bossActive) {
                 BossObject b = new BossObject(250, 250, 100, 100);
                 b.setImage(bossImage);
@@ -148,7 +148,7 @@ public class MultiplayerState extends GameState {
             EnemyObject e = new EnemyObject(rand.nextInt(GameWindow.WIDTH), 0, 50, 50);
             e.setImage(enemyImage);
             objectList.add(e);
-        }
+        }*/
 
     }
 

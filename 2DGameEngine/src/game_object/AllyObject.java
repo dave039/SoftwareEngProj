@@ -19,7 +19,7 @@ public class AllyObject extends GameObject {
     protected int currentFirePower = NORMAL_FIRE;
 
     protected boolean ableToFire;
-    protected boolean isBlinking;
+    //protected boolean isBlinking;
     protected boolean shouldRender;
 
     protected long blinkTime;
@@ -32,7 +32,7 @@ public class AllyObject extends GameObject {
         image = null;
 
         ableToFire = true;
-        isBlinking = true;
+        //isBlinking = true;
         shouldRender = true;
 
         blinkTime = -1;
@@ -48,7 +48,7 @@ public class AllyObject extends GameObject {
     }
 
     public void render(Graphics2D g) {
-        if (isBlinking) {
+        /*if (isBlinking) {
             if (flashTimer == -1) {
                 flashTimer = System.currentTimeMillis();
             }
@@ -58,7 +58,7 @@ public class AllyObject extends GameObject {
                 flashTimer = System.currentTimeMillis();
             }
 
-        }
+        }*/
         if (shouldRender) {
             g.drawImage(image, x, y, width, height, null);
         }
@@ -84,7 +84,7 @@ public class AllyObject extends GameObject {
             Sound.death.play();
         }
 
-        if (isBlinking) {
+        /*if (isBlinking) {
             if (blinkTime == -1) {
                 blinkTime = System.currentTimeMillis();
             }
@@ -94,7 +94,7 @@ public class AllyObject extends GameObject {
                 shouldRender = true;
                 blinkTime = -1;
             }
-        }
+        }*/
     }
 
     public ProjectileObject fireProjectile() {
@@ -109,7 +109,7 @@ public class AllyObject extends GameObject {
     }
 
     public void collisionDetected(int type) {
-        if (!isBlinking) {
+        /*if (!isBlinking) {
             if (type == GameObject.ENEMY_TYPE) {
                 health -= 10;
                 isBlinking = true;
@@ -118,7 +118,7 @@ public class AllyObject extends GameObject {
                 health -= 30;
                 isBlinking = true;
             }
-        }
+        }*/
     }
 
     public boolean isAbleToFire() {
