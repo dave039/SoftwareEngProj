@@ -71,8 +71,8 @@ public class MultiplayerState extends GameState {
         objectList.add(player);
 
         try {
-            //socket = new Socket("localhost", 63400);
-            socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
+            socket = new Socket("localhost", 63400);
+            //socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
             //printWriter.println("Hello Socket");
             //printWriter.println("EYYYYYAAAAAAAA!!!!");
