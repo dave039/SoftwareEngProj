@@ -2,9 +2,6 @@ package state_manager;
 
 import game.GamePanel;
 import game.GameWindow;
-import game_object.AllyObject;
-import game_object.BossObject;
-import game_object.EnemyObject;
 import game_object.GameObject;
 import game_object.Hud;
 import game_object.PlayerObject;
@@ -16,6 +13,8 @@ import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import org.json.simple.JSONObject;
 import utilities.DataListener;
@@ -36,8 +35,7 @@ public class MultiplayerState extends GameState {
 
     private PlayerObject player;
 
-    private ArrayList<GameObject> objectList;
-    public static ArrayList<AllyObject> allyList;
+    private List<GameObject> objectList;
 
     private static Socket socket;
     private static PrintWriter printWriter;
@@ -62,9 +60,9 @@ public class MultiplayerState extends GameState {
         enemyImage = FileLoader.loadImage("/resources/rubiks_cube.png");
         bossImage = FileLoader.loadImage("/resources/boss_1.png");
 
-        objectList = new ArrayList<GameObject>();
-        allyList = new ArrayList<AllyObject>();
-
+        //objectList = new ArrayList<GameObject>();
+        objectList = Collections.synchronizedList(new ArrayList<GameObject>());
+        
         hud = new Hud();
 
         player = new PlayerObject(250, 500, 50, 50);
@@ -76,13 +74,11 @@ public class MultiplayerState extends GameState {
             socket = new Socket("localhost", 63400);
             //socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
-            //printWriter.println("Hello Socket");
-            //printWriter.println("EYYYYYAAAAAAAA!!!!");
         } catch (Exception e) {
             GamePanel.setState(new MenuState());
             System.out.println(e);
         }
-        dataListener = new DataListener(socket);
+        dataListener = new DataListener(socket, objectList);
         send = new JSONObject();
         Thread t = new Thread(dataListener);
         t.start();
@@ -184,14 +180,6 @@ public class MultiplayerState extends GameState {
 
         for (int i = 0; i < objectList.size(); i++) {
             GameObject go = objectList.get(i);
-
-            if (go.isAlive()) {
-                go.render(g);
-            }
-        }
-        
-        for (int i = 0; i < allyList.size(); i++) {
-            GameObject go = allyList.get(i);
 
             if (go.isAlive()) {
                 go.render(g);

@@ -9,14 +9,12 @@ import utilities.Keys;
 
 public class AllyObject extends GameObject {
 
-    public static final int UP = 0;
-    public static final int DOWN = 1;
-    public static final int LEFT = 2;
-    public static final int RIGHT = 3;
-
     public static final int NORMAL_FIRE = 0;
 
     protected int currentFirePower = NORMAL_FIRE;
+    
+    protected final int LAG_OUT_TIMER = 120;
+    protected int lagOut = LAG_OUT_TIMER;
 
     protected boolean ableToFire;
     //protected boolean isBlinking;
@@ -82,6 +80,12 @@ public class AllyObject extends GameObject {
         if (health <= 0) {
             isAlive = false;
             Sound.death.play();
+        }
+        
+        lagOut--;
+        if (lagOut < 0)
+        {
+            isAlive = false;
         }
 
         /*if (isBlinking) {
@@ -163,5 +167,10 @@ public class AllyObject extends GameObject {
     public int getID()
     {
         return idNum;
+    }
+    
+    public void resetLagOutTimer()
+    {
+        lagOut = LAG_OUT_TIMER;
     }
 }
