@@ -67,6 +67,31 @@ public class DataListener implements Runnable {
                  }
                  }*/
                 boolean foundPlayer = false;
+<<<<<<< HEAD
+                
+                for (AllyObject tPlayer : MultiplayerState.allyList) {
+                    if (idNum == tPlayer.getID())
+                    {
+                        tPlayer.setPosition(xPos, yPos);
+                        foundPlayer = true;
+                    }
+                }
+                
+                if (!foundPlayer)
+                {
+                    AllyObject temp = new AllyObject(250, 500, 50, 50);
+                    temp.registerID(idNum);
+                    /*if (idNum == 0)
+                    {
+                        temp.setImage(FileLoader.loadImage("/resources/dwarf.png"));
+                    }
+                    else
+                    {
+                        temp.setImage(FileLoader.loadImage("/resources/sanik.png"));
+                    }*/
+                    temp.setImage(FileLoader.loadImage("/resources/sanik.png"));
+                    MultiplayerState.allyList.add(temp);
+=======
 
                 JSONArray msg = (JSONArray) recieve.get("players");
 
@@ -90,6 +115,7 @@ public class DataListener implements Runnable {
                         }
                         MultiplayerState.allyList.add(temp);
                     }
+>>>>>>> JSON
                 }
 
 
