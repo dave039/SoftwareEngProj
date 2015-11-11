@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
+import org.json.simple.JSONObject;
 import utilities.DataListener;
 
 import utilities.FileLoader;
@@ -25,6 +26,7 @@ import utilities.Keys;
 public class MultiplayerState extends GameState {
     
     private DataListener dataListener;
+    private JSONObject send;
 
     private int score;
 
@@ -71,8 +73,8 @@ public class MultiplayerState extends GameState {
         objectList.add(player);
 
         try {
-            //socket = new Socket("localhost", 63400);
-            socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
+            socket = new Socket("localhost", 63400);
+            //socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
             //printWriter.println("Hello Socket");
             //printWriter.println("EYYYYYAAAAAAAA!!!!");
@@ -81,6 +83,7 @@ public class MultiplayerState extends GameState {
             System.out.println(e);
         }
         dataListener = new DataListener(socket);
+        send = new JSONObject();
         Thread t = new Thread(dataListener);
         t.start();
     }
@@ -113,7 +116,10 @@ public class MultiplayerState extends GameState {
                 objectList.add(p);
             }
         }
-        printWriter.println("x:" + player.getX() + "y:" + player.getY());
+        send.put("xPos", player.getX());
+        send.put("yPos", player.getY());
+        printWriter.println(send);
+        //printWriter.println("x:" + player.getX() + "y:" + player.getY());
     }
 
     private void generateEnemy() {
