@@ -45,58 +45,12 @@ public class DataListener implements Runnable {
                     recieve = (JSONObject) parser.parse(input);
                 } catch (ParseException ex) {
                 }
-                //int xPos = (Integer) recieve.get("xPos");
-                //int yPos = (Integer) recieve.get("yPos");
-                /*int xIndex = input.indexOf("x:");
-                 int yIndex = input.indexOf("y:");
-                 System.out.println(input);
-                 //System.out.println("x: " + xIndex + "y: " + yIndex);
-                 xPos = Integer.parseInt(input.substring(xIndex + 2, yIndex));
-                 yPos = Integer.parseInt(input.substring(yIndex + 2, input.length()));
-                 System.out.println("id: " + idNum + "x: " + xPos + "y: " + yPos);*/
-
-                /*for (Player tPlayer : GameServer.playerList) {
-                 if (!tPlayer.equals(this)) {
-                 //output.println("id:" + tPlayer.idNum + "x:" + tPlayer.xPos + "y:" + tPlayer.yPos);
-                 send.clear();
-                 send.put("id", tPlayer.idNum);
-                 send.put("xPos", tPlayer.xPos);
-                 send.put("yPos", tPlayer.yPos);
-                 output.println(send);
-                 //System.out.println("Sending player data");
-                 }
-                 }*/
-                boolean foundPlayer = false;
-<<<<<<< HEAD
-                
-                for (AllyObject tPlayer : MultiplayerState.allyList) {
-                    if (idNum == tPlayer.getID())
-                    {
-                        tPlayer.setPosition(xPos, yPos);
-                        foundPlayer = true;
-                    }
-                }
-                
-                if (!foundPlayer)
-                {
-                    AllyObject temp = new AllyObject(250, 500, 50, 50);
-                    temp.registerID(idNum);
-                    /*if (idNum == 0)
-                    {
-                        temp.setImage(FileLoader.loadImage("/resources/dwarf.png"));
-                    }
-                    else
-                    {
-                        temp.setImage(FileLoader.loadImage("/resources/sanik.png"));
-                    }*/
-                    temp.setImage(FileLoader.loadImage("/resources/sanik.png"));
-                    MultiplayerState.allyList.add(temp);
-=======
 
                 JSONArray msg = (JSONArray) recieve.get("players");
 
                 Iterator<JSONObject> iterator = msg.iterator();
                 while (iterator.hasNext()) {
+                    boolean foundPlayer = false;
                     JSONObject updatePlayer = iterator.next();
                     for (AllyObject tPlayer : MultiplayerState.allyList) {
                         if ((Long)updatePlayer.get("id") == tPlayer.getID()) {
@@ -115,7 +69,6 @@ public class DataListener implements Runnable {
                         }
                         MultiplayerState.allyList.add(temp);
                     }
->>>>>>> JSON
                 }
 
 
