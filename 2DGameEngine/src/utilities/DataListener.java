@@ -2,11 +2,11 @@ package utilities;
 
 import game_object.AllyObject;
 import game_object.GameObject;
+import game_object.OnlineEnemyObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.json.simple.JSONArray;
@@ -64,6 +64,32 @@ public class DataListener implements Runnable {
                         } else {
                             temp.setImage(FileLoader.loadImage("/resources/sanik.png"));
                         }
+                        objectList.add(temp);
+                    }
+                }
+
+                JSONArray msg2 = (JSONArray) recieve.get("enemies");
+
+                Iterator<JSONObject> iterator2 = msg2.iterator();
+                while (iterator2.hasNext()) {
+                    boolean foundEnemy = false;
+                    JSONObject updateEnemy = iterator2.next();
+                    for (GameObject object : objectList) {
+                        if (object instanceof OnlineEnemyObject) {
+                            OnlineEnemyObject tEnemy = (OnlineEnemyObject) object;
+                            if ((Long) updateEnemy.get("id") == tEnemy.getID()) {
+                                foundEnemy = true;
+                                tEnemy.resetLagOutTimer();
+                                tEnemy.setPosition(((Long) updateEnemy.get("xPos")).intValue(), ((Long) updateEnemy.get("yPos")).intValue());
+                            }
+                        }
+                    }
+
+                    if (!foundEnemy) {
+                        OnlineEnemyObject temp = new OnlineEnemyObject(((Long) updateEnemy.get("xPos")).intValue(), ((Long) updateEnemy.get("yPos")).intValue(), 50, 50);
+                        temp.setType(GameObject.ONLINE_ENEMY_TYPE);
+                        temp.registerID(((Long) updateEnemy.get("id")).intValue());
+                        temp.setImage(FileLoader.loadImage("/resources/rubiks_cube.png"));
                         objectList.add(temp);
                     }
                 }

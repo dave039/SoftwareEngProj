@@ -15,7 +15,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import org.json.simple.JSONObject;
 import utilities.DataListener;
 
@@ -23,7 +22,7 @@ import utilities.FileLoader;
 import utilities.Keys;
 
 public class MultiplayerState extends GameState {
-    
+
     private DataListener dataListener;
     private JSONObject send;
 
@@ -60,9 +59,8 @@ public class MultiplayerState extends GameState {
         enemyImage = FileLoader.loadImage("/resources/rubiks_cube.png");
         bossImage = FileLoader.loadImage("/resources/boss_1.png");
 
-        //objectList = new ArrayList<GameObject>();
         objectList = Collections.synchronizedList(new ArrayList<GameObject>());
-        
+
         hud = new Hud();
 
         player = new PlayerObject(250, 500, 50, 50);
@@ -71,8 +69,8 @@ public class MultiplayerState extends GameState {
         objectList.add(player);
 
         try {
-            socket = new Socket("localhost", 63400);
-            //socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
+            //socket = new Socket("localhost", 63400);
+            socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
         } catch (Exception e) {
             GamePanel.setState(new MenuState());
@@ -93,7 +91,6 @@ public class MultiplayerState extends GameState {
 
         checkCollision();
         removeDeadObjects();
-        generateEnemy();
 
         for (int i = 0; i < objectList.size(); i++) {
             GameObject go = objectList.get(i);
@@ -116,42 +113,6 @@ public class MultiplayerState extends GameState {
         send.put("yPos", player.getY());
         printWriter.println(send);
         //printWriter.println("x:" + player.getX() + "y:" + player.getY());
-    }
-
-    private void generateEnemy() {
-        Random rand = new Random();
-
-//    	if(bossTimer == -1){
-//    		bossTimer = System.currentTimeMillis();
-//    	}
-//    	
-//    	if(System.currentTimeMillis() - bossTimer <= 10000){
-//    		if(rand.nextInt(50) == 0){
-//        		EnemyObject e = new EnemyObject(rand.nextInt(GameWindow.WIDTH), 0, 50, 50);
-//        		e.setImage(enemyImage);
-//        		objectList.add(e);
-//        	}
-//    	}else if(!bossActive){
-//    		BossObject b = new BossObject(250, 250, 100, 100);
-//    		b.setImage(bossImage);
-//    		objectList.add(b);
-//    		
-//    		bossActive = true;
-//    	}
-        /*if (score >= 15) {
-            if (!bossActive) {
-                BossObject b = new BossObject(250, 250, 100, 100);
-                b.setImage(bossImage);
-                objectList.add(b);
-
-                bossActive = true;
-            }
-        } else if (rand.nextInt(50) == 0) {
-            EnemyObject e = new EnemyObject(rand.nextInt(GameWindow.WIDTH), 0, 50, 50);
-            e.setImage(enemyImage);
-            objectList.add(e);
-        }*/
-
     }
 
     private void removeDeadObjects() {
