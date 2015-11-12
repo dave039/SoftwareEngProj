@@ -87,7 +87,6 @@ public class DataListener implements Runnable {
 
                     if (!foundEnemy) {
                         OnlineEnemyObject temp = new OnlineEnemyObject(((Long) updateEnemy.get("xPos")).intValue(), ((Long) updateEnemy.get("yPos")).intValue(), 50, 50);
-                        temp.setType(GameObject.ONLINE_ENEMY_TYPE);
                         temp.registerID(((Long) updateEnemy.get("id")).intValue());
                         temp.setImage(FileLoader.loadImage("/resources/rubiks_cube.png"));
                         objectList.add(temp);

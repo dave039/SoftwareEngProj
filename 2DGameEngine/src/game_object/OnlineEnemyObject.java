@@ -1,23 +1,24 @@
 package game_object;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
-public class OnlineEnemyObject extends GameObject {
+public class OnlineEnemyObject extends EnemyObject {
 
     protected final int LAG_OUT_TIMER = 120;
     protected int lagOut = LAG_OUT_TIMER;
 
     int idNum;
+    boolean wasHit = false;
 
     public OnlineEnemyObject(int x, int y, int width, int height) {
         super(x, y, width, height);
-
-        type = GameObject.ENEMY_TYPE;
-        speed = 5;
     }
 
     public void render(Graphics2D g) {
         g.drawImage(image, x, y, width, height, null);
+        //g.setColor(Color.red);
+        //g.fillRect(x, y, width, height);
     }
 
     public void update() {
@@ -32,7 +33,7 @@ public class OnlineEnemyObject extends GameObject {
 
     public void collisionDetected(int type) {
         if (type == GameObject.PROJECTILE_TYPE) {
-            isAlive = false;
+            wasHit = true;
         }
     }
 
@@ -47,6 +48,11 @@ public class OnlineEnemyObject extends GameObject {
 
     public int getID() {
         return idNum;
+    }
+    
+    public boolean wasHit()
+    {
+        return wasHit;
     }
 
     public void resetLagOutTimer() {
