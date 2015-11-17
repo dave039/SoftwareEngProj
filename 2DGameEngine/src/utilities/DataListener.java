@@ -3,6 +3,7 @@ package utilities;
 import game_object.AllyObject;
 import game_object.GameObject;
 import game_object.OnlineEnemyObject;
+import game_object.OnlineProjectileObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +14,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import state_manager.MultiplayerState;
 
 public class DataListener implements Runnable {
 
@@ -81,15 +83,72 @@ public class DataListener implements Runnable {
                                 foundEnemy = true;
                                 tEnemy.resetLagOutTimer();
                                 tEnemy.setPosition(((Long) updateEnemy.get("xPos")).intValue(), ((Long) updateEnemy.get("yPos")).intValue());
+                                if ((Boolean) updateEnemy.get("alive") == false) {
+                                    tEnemy.setAlive(false);
+                                }
                             }
                         }
                     }
 
                     if (!foundEnemy) {
-                        OnlineEnemyObject temp = new OnlineEnemyObject(((Long) updateEnemy.get("xPos")).intValue(), ((Long) updateEnemy.get("yPos")).intValue(), 50, 50);
-                        temp.registerID(((Long) updateEnemy.get("id")).intValue());
-                        temp.setImage(FileLoader.loadImage("/resources/rubiks_cube.png"));
-                        objectList.add(temp);
+                        if ((Boolean) updateEnemy.get("alive") == false) {
+                        } else {
+                            OnlineEnemyObject temp = new OnlineEnemyObject(((Long) updateEnemy.get("xPos")).intValue(), ((Long) updateEnemy.get("yPos")).intValue(), 50, 50);
+                            temp.registerID(((Long) updateEnemy.get("id")).intValue());
+                            //temp.setImage(FileLoader.loadImage("/resources/rubiks_cube.png"));
+                            temp.setImage(MultiplayerState.getEnemyImage());
+                            objectList.add(temp);
+                        }
+                    }
+                }
+
+                JSONArray msg3 = (JSONArray) recieve.get("bullets");
+
+                Iterator<JSONObject> iterator3 = msg3.iterator();
+                while (iterator3.hasNext()) {
+                    boolean foundBullet = false;
+                    JSONObject updateBullet = iterator3.next();
+                    for (GameObject object : objectList) {
+                        if (object instanceof OnlineProjectileObject) {
+                            OnlineProjectileObject tBullet = (OnlineProjectileObject) object;
+                            //System.out.println("bullet id " + ((Long) updateBullet.get("id")).intValue());
+                            //System.out.println("player id " + ((Long) updateBullet.get("playerID")).intValue());
+                            //System.out.println("actual id " + tBullet.getPlayerID());
+                            if ((Long) updateBullet.get("playerID") == tBullet.getPlayerID()) {
+                                if ((Long) updateBullet.get("id") == tBullet.getID()) {
+                                    foundBullet = true;
+                                    tBullet.resetLagOutTimer();
+                                    if ((Boolean) updateBullet.get("alive") == false) {
+                                        tBullet.setAlive(false);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (!foundBullet) {
+                        if ((Boolean) updateBullet.get("alive") == false) {
+                        } else {
+                            int xPos = 0;
+                            int yPos = 0;
+                            int idNum = ((Long) updateBullet.get("playerID")).intValue();
+                            for (GameObject object : objectList) {
+                                if (object instanceof AllyObject) {
+                                    AllyObject tAlly = (AllyObject) object;
+                                    if (idNum == tAlly.getID()) {
+                                        xPos = tAlly.getX() + tAlly.getWidth() / 2;
+                                        yPos = tAlly.getY();
+                                    }
+                                }
+                            }
+                            //System.out.println("BUG");
+                            OnlineProjectileObject temp = new OnlineProjectileObject(xPos, yPos, 10, 10);
+                            temp.registerID(((Long) updateBullet.get("id")).intValue());
+                            temp.registerPlayerID(idNum);
+                            //temp.setImage(FileLoader.loadImage("/resources/rubiks_cube.png"));
+                            temp.setImage(MultiplayerState.getProjectileImage());
+                            objectList.add(temp);
+                        }
                     }
                 }
             }

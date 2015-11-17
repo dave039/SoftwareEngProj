@@ -8,21 +8,21 @@ import game_object.OnlineEnemyObject;
 import game_object.PlayerObject;
 import game_object.ProjectileObject;
 import game_object.Star;
-import java.awt.Color;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import utilities.DataListener;
 
+import utilities.DataListener;
 import utilities.FileLoader;
 import utilities.Keys;
 
@@ -48,9 +48,14 @@ public class MultiplayerState extends GameState {
     private Hud hud;
 
     private BufferedImage playerImage;
-    private BufferedImage projectileImage;
-    private BufferedImage enemyImage;
+    private static BufferedImage projectileImage;
+    private static BufferedImage enemyImage;
     private BufferedImage bossImage;
+
+    static {
+        enemyImage = FileLoader.loadImage("/resources/rubiks_cube.png");
+        projectileImage = FileLoader.loadImage("/resources/banana.png");
+    }
 
     public MultiplayerState() {
         score = 0;
@@ -61,15 +66,13 @@ public class MultiplayerState extends GameState {
 
         backgroundImage = FileLoader.loadImage("/resources/level_one_background.png");
         playerImage = FileLoader.loadImage("/resources/dwarf.png");
-        projectileImage = FileLoader.loadImage("/resources/banana.png");
-        enemyImage = FileLoader.loadImage("/resources/rubiks_cube.png");
         bossImage = FileLoader.loadImage("/resources/boss_1.png");
 
-        objectList = Collections.synchronizedList(new ArrayList<GameObject>());
+        //objectList = Collections.synchronizedList(new ArrayList<GameObject>());
+        objectList = new CopyOnWriteArrayList<GameObject>();
         starList = new ArrayList<Star>();
-        
-        for (int num = 0; num < 250; num++)
-        {
+
+        for (int num = 0; num < 250; num++) {
             Star temp = new Star();
             starList.add(temp);
         }
@@ -103,10 +106,42 @@ public class MultiplayerState extends GameState {
         hud.update(score, player.getHealth(), player.getMaxHealth());
 
         checkCollision();
+
+        send.clear();
+        send.put("xPos", player.getX());
+        send.put("yPos", player.getY());
+        JSONArray hitDetection = new JSONArray();
+        JSONArray bulletsFired = new JSONArray();
+        for (GameObject object : objectList) {
+            if (object instanceof OnlineEnemyObject) {
+                OnlineEnemyObject tEnemy = (OnlineEnemyObject) object;
+                if (tEnemy.wasHit()) {
+                    JSONObject enemyDetails = new JSONObject();
+                    enemyDetails.put("id", tEnemy.getID());
+                    enemyDetails.put("alive", false);
+                    hitDetection.add(enemyDetails);
+                }
+            }
+            if (object.getType() == GameObject.PROJECTILE_TYPE) {
+                ProjectileObject tBullet = (ProjectileObject) object;
+                JSONObject bulletDetails = new JSONObject();
+                bulletDetails.put("id", tBullet.getID());
+                bulletDetails.put("alive", tBullet.isAlive());
+                //System.out.println("id: " + tBullet.getID() + " alive: " + tBullet.isAlive());
+                if (!tBullet.isAlive())
+                {
+                    //System.out.println("Dead bullet");
+                }
+                bulletsFired.add(bulletDetails);
+            }
+        }
+        send.put("enemies", hitDetection);
+        send.put("bullets", bulletsFired);
+        printWriter.println(send);
+
         removeDeadObjects();
-        
-        for (Star star : starList)
-        {
+
+        for (Star star : starList) {
             star.update();
         }
 
@@ -127,27 +162,6 @@ public class MultiplayerState extends GameState {
                 objectList.add(p);
             }
         }
-        send.clear();
-        send.put("xPos", player.getX());
-        send.put("yPos", player.getY());
-        JSONArray hitDetection = new JSONArray();
-        for (GameObject object : objectList)
-        {
-            if (object instanceof OnlineEnemyObject)
-            {
-                OnlineEnemyObject tEnemy = (OnlineEnemyObject)object;
-                if (tEnemy.wasHit())
-                {
-                    JSONObject enemyDetails = new JSONObject();
-                    enemyDetails.put("id", tEnemy.getID());
-                    enemyDetails.put("alive", tEnemy.wasHit());
-                    hitDetection.add(enemyDetails);
-                }
-            }
-        }
-        send.put("enemies", hitDetection);
-        printWriter.println(send);
-        //printWriter.println("x:" + player.getX() + "y:" + player.getY());
     }
 
     private void removeDeadObjects() {
@@ -173,12 +187,11 @@ public class MultiplayerState extends GameState {
 
     public void render(Graphics2D g) {
         //g.drawImage(backgroundImage, 0, 0, GameWindow.WIDTH, GameWindow.HEIGHT, null);
-        
+
         g.setColor(Color.black);
         g.fillRect(0, 0, GameWindow.WIDTH, GameWindow.HEIGHT);
-        
-        for (Star star : starList)
-        {
+
+        for (Star star : starList) {
             star.render(g);
         }
 
@@ -210,5 +223,13 @@ public class MultiplayerState extends GameState {
                 }
             }
         }
+    }
+
+    public static BufferedImage getEnemyImage() {
+        return enemyImage;
+    }
+
+    public static BufferedImage getProjectileImage() {
+        return projectileImage;
     }
 }

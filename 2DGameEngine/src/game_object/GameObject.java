@@ -11,6 +11,7 @@ public class GameObject {
     public static final int ENEMY_TYPE = 2;
     public static final int BOSS_TYPE = 3;
     public static final int ALLY_TYPE = 4;
+    public static final int ALLY_PROJECTILE_TYPE = 5;
 
     protected int x;
     protected int y;
