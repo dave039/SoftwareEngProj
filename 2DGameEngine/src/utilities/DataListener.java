@@ -40,6 +40,8 @@ public class DataListener implements Runnable {
                 } catch (ParseException ex) {
                 }
 
+                MultiplayerState.playerID = ((Long) recieve.get("playerID")).intValue();
+
                 JSONArray msg = (JSONArray) recieve.get("players");
 
                 Iterator<JSONObject> iterator = msg.iterator();
@@ -61,10 +63,14 @@ public class DataListener implements Runnable {
                         AllyObject temp = new AllyObject(250, 500, 50, 50);
                         temp.setType(GameObject.ALLY_TYPE);
                         temp.registerID(((Long) updatePlayer.get("id")).intValue());
-                        if ((Long) updatePlayer.get("id") == 0) {
+                        if ((Long) updatePlayer.get("id") % 4 == 0) {
                             temp.setImage(FileLoader.loadImage("/resources/dwarf.png"));
-                        } else {
+                        } else if ((Long) updatePlayer.get("id") % 4 == 1) {
                             temp.setImage(FileLoader.loadImage("/resources/sanik.png"));
+                        } else if ((Long) updatePlayer.get("id") % 4 == 2) {
+                            temp.setImage(FileLoader.loadImage("/resources/shrek.png"));
+                        } else if ((Long) updatePlayer.get("id") % 4 == 3) {
+                            temp.setImage(FileLoader.loadImage("/resources/doge.png"));
                         }
                         objectList.add(temp);
                     }

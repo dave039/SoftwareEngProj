@@ -47,14 +47,24 @@ public class MultiplayerState extends GameState {
 
     private Hud hud;
 
-    private BufferedImage playerImage;
+    private static BufferedImage player0Image;
+    private static BufferedImage player1Image;
+    private static BufferedImage player2Image;
+    private static BufferedImage player3Image;
     private static BufferedImage projectileImage;
     private static BufferedImage enemyImage;
     private BufferedImage bossImage;
 
+    public static Integer playerID;
+    boolean assignedImage = false;
+
     static {
         enemyImage = FileLoader.loadImage("/resources/rubiks_cube.png");
         projectileImage = FileLoader.loadImage("/resources/banana.png");
+        player0Image = FileLoader.loadImage("/resources/dwarf.png");
+        player1Image = FileLoader.loadImage("/resources/sanik.png");
+        player2Image = FileLoader.loadImage("/resources/shrek.png");
+        player3Image = FileLoader.loadImage("/resources/doge.png");
     }
 
     public MultiplayerState() {
@@ -65,7 +75,7 @@ public class MultiplayerState extends GameState {
         bossActive = false;
 
         backgroundImage = FileLoader.loadImage("/resources/level_one_background.png");
-        playerImage = FileLoader.loadImage("/resources/dwarf.png");
+
         bossImage = FileLoader.loadImage("/resources/boss_1.png");
 
         //objectList = Collections.synchronizedList(new ArrayList<GameObject>());
@@ -80,7 +90,7 @@ public class MultiplayerState extends GameState {
         hud = new Hud();
 
         player = new PlayerObject(250, 500, 50, 50);
-        player.setImage(playerImage);
+        player.setImage(player0Image);
 
         objectList.add(player);
 
@@ -105,6 +115,19 @@ public class MultiplayerState extends GameState {
 
         hud.update(score, player.getHealth(), player.getMaxHealth());
 
+        if (playerID != null && assignedImage == false) {
+            assignedImage = true;
+            if (playerID % 4 == 0) {
+                player.setImage(player0Image);
+            } else if (playerID % 4 == 1) {
+                player.setImage(player1Image);
+            } else if (playerID % 4 == 2) {
+                player.setImage(player2Image);
+            } else if (playerID % 4 == 3) {
+                player.setImage(player3Image);
+            }
+        }
+
         checkCollision();
 
         send.clear();
@@ -128,8 +151,7 @@ public class MultiplayerState extends GameState {
                 bulletDetails.put("id", tBullet.getID());
                 bulletDetails.put("alive", tBullet.isAlive());
                 //System.out.println("id: " + tBullet.getID() + " alive: " + tBullet.isAlive());
-                if (!tBullet.isAlive())
-                {
+                if (!tBullet.isAlive()) {
                     //System.out.println("Dead bullet");
                 }
                 bulletsFired.add(bulletDetails);
@@ -231,5 +253,21 @@ public class MultiplayerState extends GameState {
 
     public static BufferedImage getProjectileImage() {
         return projectileImage;
+    }
+
+    public static BufferedImage getPlayer0Image() {
+        return player0Image;
+    }
+
+    public static BufferedImage getPlayer1Image() {
+        return player1Image;
+    }
+
+    public static BufferedImage getPlayer2Image() {
+        return player2Image;
+    }
+
+    public static BufferedImage getPlayer3Image() {
+        return player3Image;
     }
 }

@@ -1,38 +1,38 @@
 package menu_manager;
 
-
 public class MenuOption {
-	private String name;
-	private int x;
-	private int y;
-	
-	public MenuOption(String name, int x, int y){
-		this.name = name;
-		this.x = x;
-		this.y = y;
-	}
 
-	public String getName() {
-		return name;
-	}
+    private String name;
+    private int x;
+    private int y;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public MenuOption(String name, int x, int y) {
+        this.name = name;
+        this.x = x;
+        this.y = y;
+    }
 
-	public int getX() {
-		return x;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setX(int x) {
-		this.x = x;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public int getY() {
-		return y;
-	}
+    public int getX() {
+        return x;
+    }
 
-	public void setY(int y) {
-		this.y = y;
-	}
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
 }

@@ -19,7 +19,7 @@ public class Star {
     }
 
     public void update() {
-        y += ((float)size)/2;
+        y += ((float) size) / 2;
 
         if (y > GameWindow.HEIGHT + size) {
             reset();

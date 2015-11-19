@@ -12,7 +12,7 @@ public class ProjectileObject extends GameObject {
 
         type = GameObject.PROJECTILE_TYPE;
         speed = 10;
-        
+
         idNum = idCounter;
         idCounter++;
     }
@@ -38,9 +38,8 @@ public class ProjectileObject extends GameObject {
             isAlive = false;
         }
     }
-    
-    public int getID()
-    {
+
+    public int getID() {
         return idNum;
     }
 }

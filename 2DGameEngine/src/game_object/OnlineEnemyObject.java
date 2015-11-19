@@ -24,10 +24,9 @@ public class OnlineEnemyObject extends EnemyObject {
     public void update() {
         //super.update();
         collisionBox.setBounds(x, y, width, height);
-        
+
         lagOut--;
-        if (lagOut < 0)
-        {
+        if (lagOut < 0) {
             isAlive = false;
         }
     }
@@ -50,9 +49,8 @@ public class OnlineEnemyObject extends EnemyObject {
     public int getID() {
         return idNum;
     }
-    
-    public boolean wasHit()
-    {
+
+    public boolean wasHit() {
         return wasHit;
     }
 

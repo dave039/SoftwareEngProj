@@ -12,7 +12,7 @@ public class AllyObject extends GameObject {
     public static final int NORMAL_FIRE = 0;
 
     protected int currentFirePower = NORMAL_FIRE;
-    
+
     protected final int LAG_OUT_TIMER = 120;
     protected int lagOut = LAG_OUT_TIMER;
 
@@ -22,7 +22,7 @@ public class AllyObject extends GameObject {
 
     protected long blinkTime;
     protected long flashTimer;
-    
+
     int idNum;
 
     public AllyObject(int x, int y, int width, int height) {
@@ -81,10 +81,9 @@ public class AllyObject extends GameObject {
             isAlive = false;
             Sound.death.play();
         }
-        
+
         lagOut--;
-        if (lagOut < 0)
-        {
+        if (lagOut < 0) {
             isAlive = false;
         }
 
@@ -152,25 +151,21 @@ public class AllyObject extends GameObject {
     public void setMaxHealth(int maxHealth) {
         this.maxHealth = maxHealth;
     }
-    
-    public void setPosition(int xPos, int yPos)
-    {
+
+    public void setPosition(int xPos, int yPos) {
         x = xPos;
         y = yPos;
     }
-    
-    public void registerID(int idNum)
-    {
+
+    public void registerID(int idNum) {
         this.idNum = idNum;
     }
-    
-    public int getID()
-    {
+
+    public int getID() {
         return idNum;
     }
-    
-    public void resetLagOutTimer()
-    {
+
+    public void resetLagOutTimer() {
         lagOut = LAG_OUT_TIMER;
     }
 }

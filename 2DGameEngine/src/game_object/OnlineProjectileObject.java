@@ -14,7 +14,7 @@ public class OnlineProjectileObject extends GameObject {
 
     public OnlineProjectileObject(int x, int y, int width, int height) {
         super(x, y, width, height);
-        
+
         speed = 10;
         type = GameObject.ALLY_PROJECTILE_TYPE;
     }

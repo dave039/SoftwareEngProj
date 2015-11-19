@@ -1,4 +1,5 @@
 package game;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -16,25 +17,25 @@ import utilities.InputManager;
 public class GamePanel extends JPanel implements Runnable {
 
     private Font fpsFont;
-	
+
     static private InputManager inputManager;
     static private StateManager runningState;
 
     static private boolean running = true;
     static private double fpsCap = 60;
     static private int fps;
-    
-    public GamePanel() {        
+
+    public GamePanel() {
         inputManager = new InputManager();
-        
+
         addKeyListener(inputManager);
         addFocusListener(inputManager);
         addMouseListener(inputManager);
         addMouseMotionListener(inputManager);
-        
+
         runningState = new StateManager();
         runningState.setState(new MenuState());
-        
+
         fpsFont = new Font("Arial", Font.PLAIN, 20);
     }
 
@@ -44,10 +45,10 @@ public class GamePanel extends JPanel implements Runnable {
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         //g2.setRenderingHints(rh);
-        
+
         g2.setColor(Color.WHITE);
         g2.fillRect(0, 0, GameWindow.WIDTH, GameWindow.HEIGHT);
-        
+
         runningState.render(g2);
 
         g2.setColor(Color.WHITE);
@@ -56,7 +57,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void run() {
-    	Sound.level.loop();
+        Sound.level.loop();
         int frames = 0;
 
         double unprocessedSeconds = 0;

@@ -20,79 +20,79 @@ import utilities.Keys;
 
 public class LevelOneState extends GameState {
 
-	private int score;
-	
-	private boolean bossActive;
-	
-	private long bossTimer;
-	
-	private PlayerObject player;
+    private int score;
 
-	private ArrayList<GameObject> objectList;
-    
+    private boolean bossActive;
+
+    private long bossTimer;
+
+    private PlayerObject player;
+
+    private ArrayList<GameObject> objectList;
+
     private Hud hud;
-    
+
     private BufferedImage playerImage;
     private BufferedImage projectileImage;
     private BufferedImage enemyImage;
     private BufferedImage bossImage;
 
     public LevelOneState() {
-    	score = 0;
-    	
-    	bossTimer = -1;
-    	
-    	bossActive = false;
-    	
+        score = 0;
+
+        bossTimer = -1;
+
+        bossActive = false;
+
         backgroundImage = FileLoader.loadImage("/resources/level_one_background.png");
         playerImage = FileLoader.loadImage("/resources/dwarf.png");
         projectileImage = FileLoader.loadImage("/resources/banana.png");
         enemyImage = FileLoader.loadImage("/resources/rubiks_cube.png");
         bossImage = FileLoader.loadImage("/resources/boss_1.png");
-        
+
         objectList = new ArrayList<GameObject>();
-        
+
         hud = new Hud();
-        
+
         player = new PlayerObject(250, 500, 50, 50);
         player.setImage(playerImage);
-        
+
         objectList.add(player);
     }
 
     public void update(boolean[] keys) {
-    	if(keys[Keys.ESCAPE]){
-    		System.exit(0);
-    	}
-    	 
+        if (keys[Keys.ESCAPE]) {
+            System.exit(0);
+        }
+
         hud.update(score, player.getHealth(), player.getMaxHealth());
-        
+
         checkCollision();
         removeDeadObjects();
         generateEnemy();
-        
+
         for (int i = 0; i < objectList.size(); i++) {
-        	GameObject go = objectList.get(i);
-        	
-        	if(go.getType() == GameObject.PLAYER_TYPE){
-        		go.setKeyboardInput(keys);
-        	}
-        	
+            GameObject go = objectList.get(i);
+
+            if (go.getType() == GameObject.PLAYER_TYPE) {
+                go.setKeyboardInput(keys);
+            }
+
             go.update();
         }
-        
-        if(keys[Keys.SPACE]){
-        	if(player.isAbleToFire()){
-        		ProjectileObject p = player.fireProjectile();
-        		p.setImage(projectileImage);
-        		objectList.add(p);
-        	}
+
+        if (keys[Keys.SPACE]) {
+            if (player.isAbleToFire()) {
+                ProjectileObject p = player.fireProjectile();
+                p.setImage(projectileImage);
+                objectList.add(p);
+            }
         }
     }
-    
-    private void generateEnemy(){
-    	Random rand = new Random();
-    	
+
+    private void generateEnemy() {
+        Random rand = new Random();
+
 //    	if(bossTimer == -1){
 //    		bossTimer = System.currentTimeMillis();
 //    	}
@@ -110,77 +110,73 @@ public class LevelOneState extends GameState {
 //    		
 //    		bossActive = true;
 //    	}
-    	
-    	if(score >= 15){
-    		if(!bossActive){
-	    		BossObject b = new BossObject(250, 250, 100, 100);
-	    		b.setImage(bossImage);
-	    		objectList.add(b);
-    		
-	    		bossActive = true;
-    		}
-    	}else{
-    		if(rand.nextInt(50) == 0){
-        		EnemyObject e = new EnemyObject(rand.nextInt(GameWindow.WIDTH), 0, 50, 50);
-        		e.setImage(enemyImage);
-        		objectList.add(e);
-        	}
-    	}
-    	
+        if (score >= 15) {
+            if (!bossActive) {
+                BossObject b = new BossObject(250, 250, 100, 100);
+                b.setImage(bossImage);
+                objectList.add(b);
+
+                bossActive = true;
+            }
+        } else if (rand.nextInt(50) == 0) {
+            EnemyObject e = new EnemyObject(rand.nextInt(GameWindow.WIDTH), 0, 50, 50);
+            e.setImage(enemyImage);
+            objectList.add(e);
+        }
+
     }
-    
-    private void removeDeadObjects(){
-    	for (int i = 0; i < objectList.size(); i++) {
-        	GameObject go = objectList.get(i);
-           	
-        	if(!go.isAlive()){
-        		objectList.remove(i);
-        		i--;
-        		
-        		int type = go.getType();
-        		
-        		if(type == GameObject.ENEMY_TYPE){
-        			score++;
-        		}
-        		else if(type == GameObject.PLAYER_TYPE){
-        			GamePanel.setState(new GameOverState());
-        		}else if(type == GameObject.BOSS_TYPE){
-        			GamePanel.setState(new LevelUpState(score));
-        		}
-        	}
+
+    private void removeDeadObjects() {
+        for (int i = 0; i < objectList.size(); i++) {
+            GameObject go = objectList.get(i);
+
+            if (!go.isAlive()) {
+                objectList.remove(i);
+                i--;
+
+                int type = go.getType();
+
+                if (type == GameObject.ENEMY_TYPE) {
+                    score++;
+                } else if (type == GameObject.PLAYER_TYPE) {
+                    GamePanel.setState(new GameOverState());
+                } else if (type == GameObject.BOSS_TYPE) {
+                    GamePanel.setState(new LevelUpState(score));
+                }
+            }
         }
     }
-    
+
     public void render(Graphics2D g) {
         g.drawImage(backgroundImage, 0, 0, GameWindow.WIDTH, GameWindow.HEIGHT, null);
 
         for (int i = 0; i < objectList.size(); i++) {
-        	GameObject go = objectList.get(i);
-        	
-        	if(go.isAlive()){
-        		go.render(g);
-        	}
+            GameObject go = objectList.get(i);
+
+            if (go.isAlive()) {
+                go.render(g);
+            }
         }
-        
+
         hud.render(g);
     }
-    
-    private void checkCollision(){
-    	for(int i = 0; i < objectList.size(); i++){
-    		for(int j = 0; j < objectList.size(); j++){
-    			if(i == j){
-    				continue;
-    			}
-    			
-    			GameObject g1 = objectList.get(i);
-    			GameObject g2 = objectList.get(j);
-    			Rectangle r1 = g1.getCollisionBox();
-    			Rectangle r2 = g2.getCollisionBox();
-    			
-    			if(r1.intersects(r2)){
-    				g1.collisionDetected(g2.getType());
-    			}
-    		}
-    	}
+
+    private void checkCollision() {
+        for (int i = 0; i < objectList.size(); i++) {
+            for (int j = 0; j < objectList.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
+
+                GameObject g1 = objectList.get(i);
+                GameObject g2 = objectList.get(j);
+                Rectangle r1 = g1.getCollisionBox();
+                Rectangle r2 = g2.getCollisionBox();
+
+                if (r1.intersects(r2)) {
+                    g1.collisionDetected(g2.getType());
+                }
+            }
+        }
     }
 }
