@@ -6,8 +6,6 @@ import game.GameWindow;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.io.PrintWriter;
-import java.net.Socket;
 
 import menu_manager.MenuManager;
 import utilities.FileLoader;
@@ -45,7 +43,7 @@ public class MenuState extends GameState {
                     GamePanel.setState(new LevelOneState());
                     break;
                 case MULTIPLAYER_OPTION:
-                    GamePanel.setState(new MultiplayerState());
+                    GamePanel.setState(new ServerListState());
                     break;
                 case EXIT_OPTION:
                     System.exit(0);

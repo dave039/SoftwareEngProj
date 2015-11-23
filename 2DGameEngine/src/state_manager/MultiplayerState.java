@@ -13,6 +13,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -56,7 +58,9 @@ public class MultiplayerState extends GameState {
     private BufferedImage bossImage;
 
     public static Integer playerID;
-    boolean assignedImage = false;
+    private boolean assignedImage = false;
+
+    private boolean didCrash = false;
 
     static {
         enemyImage = FileLoader.loadImage("/resources/rubiks_cube.png");
@@ -67,7 +71,7 @@ public class MultiplayerState extends GameState {
         player3Image = FileLoader.loadImage("/resources/doge.png");
     }
 
-    public MultiplayerState() {
+    public MultiplayerState(String ip, int port) {
         score = 0;
 
         bossTimer = -1;
@@ -96,92 +100,109 @@ public class MultiplayerState extends GameState {
 
         try {
             //socket = new Socket("localhost", 63400);
-            socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
+            //socket = new Socket("68.8.238.186", 63400);
+            socket = new Socket(ip, port);
+            //socket = new Socket("ec2-54-68-103-36.us-west-2.compute.amazonaws.com", 63400);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
+            dataListener = new DataListener(socket, objectList);
+            send = new JSONObject();
+            Thread t = new Thread(dataListener);
+            t.start();
         } catch (Exception e) {
-            GamePanel.setState(new MenuState());
             System.out.println(e);
+            didCrash = true;
         }
-        dataListener = new DataListener(socket, objectList);
-        send = new JSONObject();
-        Thread t = new Thread(dataListener);
-        t.start();
     }
 
     public void update(boolean[] keys) {
-        if (keys[Keys.ESCAPE]) {
-            System.exit(0);
-        }
-
-        hud.update(score, player.getHealth(), player.getMaxHealth());
-
-        if (playerID != null && assignedImage == false) {
-            assignedImage = true;
-            if (playerID % 4 == 0) {
-                player.setImage(player0Image);
-            } else if (playerID % 4 == 1) {
-                player.setImage(player1Image);
-            } else if (playerID % 4 == 2) {
-                player.setImage(player2Image);
-            } else if (playerID % 4 == 3) {
-                player.setImage(player3Image);
+        if (didCrash) {
+            GamePanel.setState(new ServerListState());
+        } else {
+            if (keys[Keys.ESCAPE]) {
+                System.exit(0);
             }
-        }
+            if (keys[Keys.Q]) {
+                send.put("status", "quit");
+                printWriter.println(send);
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+                    //Logger.getLogger(MultiplayerState.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                GamePanel.setState(new ServerListState());
+            }
 
-        checkCollision();
+            hud.update(score, player.getHealth(), player.getMaxHealth());
 
-        send.clear();
-        send.put("xPos", player.getX());
-        send.put("yPos", player.getY());
-        JSONArray hitDetection = new JSONArray();
-        JSONArray bulletsFired = new JSONArray();
-        for (GameObject object : objectList) {
-            if (object instanceof OnlineEnemyObject) {
-                OnlineEnemyObject tEnemy = (OnlineEnemyObject) object;
-                if (tEnemy.wasHit()) {
-                    JSONObject enemyDetails = new JSONObject();
-                    enemyDetails.put("id", tEnemy.getID());
-                    enemyDetails.put("alive", false);
-                    hitDetection.add(enemyDetails);
+            if (playerID != null && assignedImage == false) {
+                assignedImage = true;
+                if (playerID % 4 == 0) {
+                    player.setImage(player0Image);
+                } else if (playerID % 4 == 1) {
+                    player.setImage(player1Image);
+                } else if (playerID % 4 == 2) {
+                    player.setImage(player2Image);
+                } else if (playerID % 4 == 3) {
+                    player.setImage(player3Image);
                 }
             }
-            if (object.getType() == GameObject.PROJECTILE_TYPE) {
-                ProjectileObject tBullet = (ProjectileObject) object;
-                JSONObject bulletDetails = new JSONObject();
-                bulletDetails.put("id", tBullet.getID());
-                bulletDetails.put("alive", tBullet.isAlive());
-                //System.out.println("id: " + tBullet.getID() + " alive: " + tBullet.isAlive());
-                if (!tBullet.isAlive()) {
-                    //System.out.println("Dead bullet");
+
+            checkCollision();
+
+            send.clear();
+            send.put("xPos", player.getX());
+            send.put("yPos", player.getY());
+            JSONArray hitDetection = new JSONArray();
+            JSONArray bulletsFired = new JSONArray();
+            for (GameObject object : objectList) {
+                if (object instanceof OnlineEnemyObject) {
+                    OnlineEnemyObject tEnemy = (OnlineEnemyObject) object;
+                    if (tEnemy.wasHit()) {
+                        JSONObject enemyDetails = new JSONObject();
+                        enemyDetails.put("id", tEnemy.getID());
+                        enemyDetails.put("alive", false);
+                        hitDetection.add(enemyDetails);
+                    }
                 }
-                bulletsFired.add(bulletDetails);
+                if (object.getType() == GameObject.PROJECTILE_TYPE) {
+                    ProjectileObject tBullet = (ProjectileObject) object;
+                    JSONObject bulletDetails = new JSONObject();
+                    bulletDetails.put("id", tBullet.getID());
+                    bulletDetails.put("alive", tBullet.isAlive());
+                    //System.out.println("id: " + tBullet.getID() + " alive: " + tBullet.isAlive());
+                    if (!tBullet.isAlive()) {
+                        //System.out.println("Dead bullet");
+                    }
+                    bulletsFired.add(bulletDetails);
+                }
             }
-        }
-        send.put("enemies", hitDetection);
-        send.put("bullets", bulletsFired);
-        printWriter.println(send);
+            send.put("enemies", hitDetection);
+            send.put("bullets", bulletsFired);
+            send.put("status", "ok");
+            printWriter.println(send);
 
-        removeDeadObjects();
+            removeDeadObjects();
 
-        for (Star star : starList) {
-            star.update();
-        }
-
-        for (int i = 0; i < objectList.size(); i++) {
-            GameObject go = objectList.get(i);
-
-            if (go.getType() == GameObject.PLAYER_TYPE) {
-                go.setKeyboardInput(keys);
+            for (Star star : starList) {
+                star.update();
             }
 
-            go.update();
-        }
+            for (int i = 0; i < objectList.size(); i++) {
+                GameObject go = objectList.get(i);
 
-        if (keys[Keys.SPACE]) {
-            if (player.isAbleToFire()) {
-                ProjectileObject p = player.fireProjectile();
-                p.setImage(projectileImage);
-                objectList.add(p);
+                if (go.getType() == GameObject.PLAYER_TYPE) {
+                    go.setKeyboardInput(keys);
+                }
+
+                go.update();
+            }
+
+            if (keys[Keys.SPACE]) {
+                if (player.isAbleToFire()) {
+                    ProjectileObject p = player.fireProjectile();
+                    p.setImage(projectileImage);
+                    objectList.add(p);
+                }
             }
         }
     }

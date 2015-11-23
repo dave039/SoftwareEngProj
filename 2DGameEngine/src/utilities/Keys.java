@@ -8,6 +8,7 @@ public class Keys {
     public static final int DOWN = KeyEvent.VK_DOWN;
     public static final int LEFT = KeyEvent.VK_LEFT;
     public static final int RIGHT = KeyEvent.VK_RIGHT;
+    public static final int Q = KeyEvent.VK_Q;
     public static final int W = KeyEvent.VK_W;
     public static final int A = KeyEvent.VK_A;
     public static final int D = KeyEvent.VK_D;
