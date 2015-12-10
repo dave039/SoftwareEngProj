@@ -1,11 +1,14 @@
 package state_manager;
 
+import Sound.Sound;
 import game.GamePanel;
 import game.GameWindow;
 import game_object.BossObject;
+import game_object.DuckObject;
 import game_object.EnemyObject;
 import game_object.GameObject;
 import game_object.Hud;
+import game_object.OrangeObject;
 import game_object.PlayerObject;
 import game_object.PowerUpObject;
 import game_object.ProjectileObject;
@@ -19,9 +22,7 @@ import java.util.Random;
 import utilities.FileLoader;
 import utilities.Keys;
 
-import Sound.Sound;
-
-public class LevelOneState extends GameState {
+public class LevelTwoState extends GameState {
 
     private int score;
 
@@ -30,9 +31,9 @@ public class LevelOneState extends GameState {
     private long bossTimer;
 
     private PlayerObject player;
-    //private PowerUpObject powerup;
 
     private ArrayList<GameObject> objectList;
+    private ArrayList<DuckObject> duckList;
 
     private Hud hud;
 
@@ -40,9 +41,11 @@ public class LevelOneState extends GameState {
     private BufferedImage projectileImage;
     private BufferedImage enemyImage;
     private BufferedImage bossImage;
+    private BufferedImage duckImage;
+    private BufferedImage orangeImage;
     private BufferedImage powerupImage;
 
-    public LevelOneState() {
+    public LevelTwoState() {
         score = 0;
 
         bossTimer = -1;
@@ -54,21 +57,19 @@ public class LevelOneState extends GameState {
         projectileImage = FileLoader.loadImage("/resources/banana.png");
         enemyImage = FileLoader.loadImage("/resources/rubiks_cube.png");
         bossImage = FileLoader.loadImage("/resources/boss_1.png");
+        duckImage = FileLoader.loadImage("/resources/duck.png");
+        orangeImage = FileLoader.loadImage("/resources/orange.png");
         powerupImage = FileLoader.loadImage("/resources/powerup.png");
 
         objectList = new ArrayList<GameObject>();
+        duckList = new ArrayList<DuckObject>();
 
         hud = new Hud();
 
-        //powerup = new PowerUpObject(50, 50);
-        //powerup.setImage(powerupImage);
-        //generatePowerUp();
-        //powerup.setisAlive(false);
         player = new PlayerObject(250, 500, 50, 50);
         player.setImage(playerImage);
 
         objectList.add(player);
-        //objectList.add(powerup);
     }
 
     public void update(boolean[] keys) {
@@ -103,6 +104,22 @@ public class LevelOneState extends GameState {
                 Sound.gun.play();
             }
         }
+
+        duckFire();
+    }
+
+    private void duckFire() {
+        for (int i = 0; i < duckList.size(); i++) {
+            DuckObject d = duckList.get(i);
+
+            if (d.isShouldFire()) {
+                OrangeObject o = d.fireOrange(player.getX(), player.getY());
+                d.setShouldFire(true);
+
+                o.setImage(orangeImage);
+                objectList.add(o);
+            }
+        }
     }
 
     private void generateEnemy() {
@@ -125,7 +142,7 @@ public class LevelOneState extends GameState {
 //    		
 //    		bossActive = true;
 //    	}
-        if (score >= 5) {
+        if (score >= 10) {
             if (!bossActive) {
                 BossObject b = new BossObject(250, 250, 100, 100);
                 b.setImage(bossImage);
@@ -137,6 +154,13 @@ public class LevelOneState extends GameState {
             EnemyObject e = new EnemyObject(rand.nextInt(GameWindow.WIDTH), 0, 50, 50);
             e.setImage(enemyImage);
             objectList.add(e);
+        }
+
+        if (rand.nextInt(200) == 0) {
+            DuckObject d = new DuckObject(rand.nextInt(GameWindow.WIDTH), 0, 50, 50);
+            d.setImage(duckImage);
+            duckList.add(d);
+            objectList.add(d);
         }
 
     }
@@ -156,7 +180,7 @@ public class LevelOneState extends GameState {
                 } else if (type == GameObject.PLAYER_TYPE) {
                     GamePanel.setState(new GameOverState());
                 } else if (type == GameObject.BOSS_TYPE) {
-                    GamePanel.setState(new LevelUpState(score, player, 2));
+                    GamePanel.setState(new LevelUpState(score, player, 1));
                 }
             }
         }

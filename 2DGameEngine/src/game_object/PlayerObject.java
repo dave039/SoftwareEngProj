@@ -18,20 +18,27 @@ public class PlayerObject extends GameObject {
 
     protected int currentFirePower = NORMAL_FIRE;
 
+    protected int damage;
+
     protected boolean ableToFire;
     protected boolean isBlinking;
     protected boolean shouldRender;
+    protected boolean isSmall;
 
     protected long blinkTime;
     protected long flashTimer;
+    protected long powerupTime;
 
     public PlayerObject(int x, int y, int width, int height) {
         super(x, y, width, height);
         image = null;
 
+        damage = 1;
+
         ableToFire = true;
         isBlinking = true;
         shouldRender = true;
+        isSmall = false;
 
         blinkTime = -1;
         flashTimer = -1;
@@ -120,12 +127,27 @@ public class PlayerObject extends GameObject {
                 blinkTime = -1;
             }
         }
+        if (isSmall) {
+            if (powerupTime == -1) {
+                powerupTime = System.currentTimeMillis();
+                this.width = 25;
+                this.height = 25;
+            }
+
+            if (System.currentTimeMillis() - powerupTime >= 3000) {
+                isSmall = false;
+                this.width = 50;
+                this.height = 50;
+                powerupTime = -1;
+            }
+        }
+
     }
 
     public ProjectileObject fireProjectile() {
         if (currentFirePower == NORMAL_FIRE) {
             ableToFire = false;
-            Sound.gun.play();
+            //Sound.gun.play();
             return new ProjectileObject(x + (width / 2) - 5, y, 10, 10);
         } else {
             return new ProjectileObject(x + (width / 2) - 5, y, 10, 10);
@@ -143,6 +165,10 @@ public class PlayerObject extends GameObject {
                 health -= 30;
                 isBlinking = true;
             }
+        }
+        if (type == GameObject.POWERUP_TYPE) {
+            isSmall = true;
+            powerupTime = -1;
         }
     }
 
@@ -172,5 +198,13 @@ public class PlayerObject extends GameObject {
 
     public void setMaxHealth(int maxHealth) {
         this.maxHealth = maxHealth;
+    }
+
+    public void setDamage(int d) {
+        damage = d;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 }

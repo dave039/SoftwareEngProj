@@ -36,9 +36,8 @@ public class Server {
     public int getPlayerCounter() {
         return playerCount;
     }
-    
-    public void decrementCountdown()
-    {
+
+    public void decrementCountdown() {
         lagOut--;
     }
 

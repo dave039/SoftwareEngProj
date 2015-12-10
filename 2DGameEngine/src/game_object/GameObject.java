@@ -12,6 +12,8 @@ public class GameObject {
     public static final int BOSS_TYPE = 3;
     public static final int ALLY_TYPE = 4;
     public static final int ALLY_PROJECTILE_TYPE = 5;
+    public static final int POWERUP_TYPE = 6;
+    public static final int ENEMY_PROJECTILE_TYPE = 7;
 
     protected int x;
     protected int y;
@@ -27,6 +29,17 @@ public class GameObject {
     protected BufferedImage image;
 
     protected Rectangle collisionBox;
+
+    public GameObject(int width, int height) {
+        //this.x = 100;
+        //this.y = 0;
+        this.width = width;
+        this.height = height;
+
+        isAlive = true;
+
+        collisionBox = new Rectangle(x, y, width, height);
+    }
 
     public GameObject(int x, int y, int width, int height) {
         this.x = x;

@@ -13,6 +13,7 @@ public class GameWindow extends JFrame {
         JFrame window = new JFrame(title); //initialize window
         panel = new GamePanel();	//initialize panel
         window.add(panel);	//add the panel to the window
+        requestFocusInWindow();
 
         window.setSize(WIDTH, HEIGHT);	//set the size of window
         window.setResizable(false);

@@ -2,6 +2,7 @@ package state_manager;
 
 import game.GamePanel;
 import game.GameWindow;
+import game_object.PlayerObject;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -17,6 +18,7 @@ public class LevelUpState extends GameState {
     public static final int NEXT_LEVEL_OPTION = 2;
 
     private int score;
+    private int nextState;
 
     private boolean keyLock;
 
@@ -24,10 +26,16 @@ public class LevelUpState extends GameState {
 
     private MenuManager menuManager;
 
-    public LevelUpState(int score) {
+    private PlayerObject playerObject;
+
+    public LevelUpState(int score, PlayerObject po, int ns) {
         super();
 
         font = new Font("Arial", Font.PLAIN, 20);
+
+        nextState = ns;
+
+        playerObject = po;
 
         keyLock = false;
 
@@ -45,9 +53,21 @@ public class LevelUpState extends GameState {
         g.setColor(Color.BLUE);
         g.fillRect(0, 0, GameWindow.WIDTH, GameWindow.HEIGHT);
 
+        g.setColor(Color.WHITE);
         g.drawString("Score: " + score, 200, 70);
 
         menuManager.render(g);
+    }
+
+    private void nextLevel() {
+        switch (nextState) {
+            case 1:
+                GamePanel.setState(new LevelOneState());
+                break;
+            case 2:
+                GamePanel.setState(new LevelTwoState());
+                break;
+        }
     }
 
     public void update(boolean[] keys) {
@@ -63,16 +83,31 @@ public class LevelUpState extends GameState {
                 keyLock = true;
             }
         }
-        if (!keys[Keys.UP] && !keys[Keys.DOWN]) {
+        if (!keys[Keys.UP] && !keys[Keys.DOWN] && !keys[Keys.ENTER]) {
             keyLock = false;
         }
         if (keys[Keys.ENTER]) {
-            switch (MenuManager.getCurrentOption()) {
-                case NEXT_LEVEL_OPTION:
-                    GamePanel.setState(new LevelOneState());
-                    break;
-                default:
-                    break;
+            if (!keyLock) {
+                keyLock = true;
+                switch (MenuManager.getCurrentOption()) {
+                    case NEXT_LEVEL_OPTION:
+                        nextLevel();
+                        break;
+                    case INCREASE_HEALTH_OPTION:
+                        if (score >= 3) {
+                            playerObject.setHealth(playerObject.getHealth() + 10);
+                            score -= 3;
+                        }
+                        break;
+                    case INCREASE_DAMAGE_OPTION:
+                        if (score >= 3) {
+                            playerObject.setDamage(playerObject.getDamage() + 1);
+                            score -= 3;
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
